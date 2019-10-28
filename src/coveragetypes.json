@@ -1,0 +1,18 @@
+[
+	{
+		"coverageType": "Workers Compensation",
+		"lossTypes": ["Medical Only", "Indemnity", "Report Only", "Incident"]
+	 },
+	 {
+	 	"coverageType": "General Liability",
+	 	"lossTypes": ["Bodily Injury", "Property Damage", "Products/Completed Operations"]
+	 },
+	 {
+	 	"coverageType": "Commercial Auto",
+	 	"lossTypes": ["Bodily Injury", "Property Damage", "Comprehensive", "Collision"]
+	 },
+	 {
+	 	"coverageType": "Property",
+	 	"lossTypes": ["Wind", "Flood", "Fire", "Hail"]
+	 }
+]
