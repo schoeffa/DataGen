@@ -8,13 +8,18 @@ export class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      rows: 0,
+      rows: 1,
+      minYear: 1985,
       data: []
     };
   }
 
   handleRowInput = (e) => {
     this.setState({rows: e.target.value});
+  }
+
+  handleReportRange = (e) => {
+    this.setState({minYear: e.target.value});
   }
 
   generateClaimNum = () => {
@@ -41,14 +46,17 @@ export class App extends React.Component {
     e.preventDefault();
     let data = [];
     let company = companies[Math.floor(Math.random() * companies.length)];
-    
     for(let i=0; i<this.state.rows; i++) {
       let coverageKey = Math.floor(Math.random() * coverages.length);
+      let year = this.state.minYear;
+      year += Math.floor(Math.random() * 5);
+      console.log(year);
       let row = {
         insuredName: company.name,
         claimNumber: this.generateClaimNum(),
         coverageType: coverages[coverageKey].coverageType,
-        lossType: coverages[coverageKey].lossTypes[Math.floor(Math.random() * coverages[coverageKey].lossTypes.length)]
+        lossType: coverages[coverageKey].lossTypes[Math.floor(Math.random() * coverages[coverageKey].lossTypes.length)],
+        year: year <= 2019 ? year : 2019
       };
       data.push(row);
     }
@@ -59,7 +67,8 @@ export class App extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label>Rows</label><input type='number' value={this.state.rows} onChange={this.handleRowInput}></input>
+        <label>Rows</label><input type='number' value={this.state.rows} onChange={this.handleRowInput} min='1'></input>
+        <label>Report Start Year</label><input type='number' min='1985' max='2019' step='1' value={this.state.minYear} onChange={this.handleReportRange}></input>
         <button >Generate Data</button>
       </form>
     );
