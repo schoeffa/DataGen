@@ -62,6 +62,27 @@ export class App extends React.Component {
     return policyNum;
   }
 
+  generateDay = (month) => {
+    let day = null;
+
+    if (month === 9 || month === 4 || month === 6 || month === 11) {
+      day = Math.floor(Math.random() * 30) + 1;
+    } else if (month === 2) {
+      day = Math.floor(Math.random() * 28) + 1;
+    } else {
+      day = Math.floor(Math.random() * 31) + 1;
+    }
+
+    return day;
+  }
+
+  generateLossDate = (month, year) => {
+    let lossMonth = Math.floor(Math.random() * 12) + 1;
+    let lossDay = this.generateDay(lossMonth);
+    let lossYear = lossMonth >= month ? year : year + 1;
+    return `${lossMonth}-${lossDay}-${lossYear}`;
+  }
+
   outputCSV = (data) => {
     let csv = Papa.unparse(data);
     let filename = 'dataset.csv';
@@ -83,13 +104,18 @@ export class App extends React.Component {
     for(let i=0; i<this.state.rows; i++) {
       let coverageKey = Math.floor(Math.random() * coverages.length);
       let year = parseInt(this.state.minYear) + Math.floor(Math.random() * 5);
+      let effMonth= null;
       let policyNumber = null;
       let effectiveDate = null;
       let expirationDate = null;
       let insuranceCarrier = null;
       let occurrenceID = null;
+      let status = null;
+      let lossDate = null;
       let claimNumber = this.generateClaimNum();
       let isClash = Math.random();
+      
+      status = Math.random() < .2 ? 'Open' : 'Closed';
 
       if (isClash < .1) {
         occurrenceID++;
@@ -106,30 +132,24 @@ export class App extends React.Component {
       }
       
       if (policyNumber === null) {
-          let effMonth = Math.floor(Math.random() * 12 + 1);
-          let effDay = 0;
-          
-          if (effMonth === 9 || effMonth === 4 || effMonth === 6 || effMonth === 11) {
-            effDay = Math.floor(Math.random() * 30 + 1);
-          } else if (effMonth === 2) {
-            effDay = Math.floor(Math.random() * 28 + 1);
-          } else {
-            effDay = Math.floor(Math.random() * 31 + 1);
-          }
+        effMonth = Math.floor(Math.random() * 12) + 1;
+        let effDay = this.generateDay(effMonth);
 
-          policyNumber = this.generatePolicyNum(coverages[coverageKey].coverageType);
-          effectiveDate = `${effMonth}-${effDay}-${year}`;
-          expirationDate = `${effMonth}-${effDay}-${year+1}`;
-          insuranceCarrier = carriers[Math.floor(Math.random() * carriers.length)].name;
-          policies.push({
-            policyNumber: policyNumber,
-            effectiveDate: effectiveDate,
-            expirationDate: expirationDate,
-            coverageType: coverages[coverageKey].coverageType,
-            year: year,
-            insuranceCarrier: insuranceCarrier
-          });
-        }
+        policyNumber = this.generatePolicyNum(coverages[coverageKey].coverageType);
+        effectiveDate = `${effMonth}-${effDay}-${year}`;
+        expirationDate = `${effMonth}-${effDay}-${year+1}`;
+        insuranceCarrier = carriers[Math.floor(Math.random() * carriers.length)].name;
+        policies.push({
+          policyNumber: policyNumber,
+          effectiveDate: effectiveDate,
+          expirationDate: expirationDate,
+          coverageType: coverages[coverageKey].coverageType,
+          year: year,
+          insuranceCarrier: insuranceCarrier
+        });
+      }
+
+      lossDate = this.generateLossDate(effMonth, year)
 
       let row = {
         insuredName: company.name,
@@ -143,10 +163,12 @@ export class App extends React.Component {
         claimantName: claimants[Math.floor(Math.random() * claimants.length)].name,
         coverageType: coverages[coverageKey].coverageType,
         lossType: coverages[coverageKey].lossTypes[Math.floor(Math.random() * coverages[coverageKey].lossTypes.length)],
+        status: status,
+        lossDate: lossDate
       };
       data.push(row);
 
-      while (isClash < .1) {
+      while (isClash < .1 && i<this.state.rows) {
         occurrenceID++;
         row = {
           insuredName: company.name,
@@ -160,13 +182,14 @@ export class App extends React.Component {
           claimantName: claimants[Math.floor(Math.random() * claimants.length)].name,
           coverageType: coverages[coverageKey].coverageType,
           lossType: coverages[coverageKey].lossTypes[Math.floor(Math.random() * coverages[coverageKey].lossTypes.length)],
+          status: status,
+          lossDate: lossDate
         };
         data.push(row);
         isClash = Math.random();
         i++;
       }
     }
-    console.log(data);
     this.outputCSV(data);
   }
 
