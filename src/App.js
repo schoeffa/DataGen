@@ -87,6 +87,13 @@ export class App extends React.Component {
       let effectiveDate = null;
       let expirationDate = null;
       let insuranceCarrier = null;
+      let occurrenceID = null;
+      let claimNumber = this.generateClaimNum();
+      let isClash = Math.random();
+
+      if (isClash < .1) {
+        occurrenceID++;
+      }
 
       for(let j=0; j<policies.length; j++) {
         if(policies[j].year === year && policies[j].coverageType === coverages[coverageKey].coverageType) {
@@ -131,12 +138,33 @@ export class App extends React.Component {
         year: year <= 2019 ? year : 2019,
         effectiveDate: effectiveDate,
         expirationDate: expirationDate,
-        claimNumber: this.generateClaimNum(),
+        claimNumber: claimNumber,
+        occurrenceID: occurrenceID,
         claimantName: claimants[Math.floor(Math.random() * claimants.length)].name,
         coverageType: coverages[coverageKey].coverageType,
         lossType: coverages[coverageKey].lossTypes[Math.floor(Math.random() * coverages[coverageKey].lossTypes.length)],
       };
       data.push(row);
+
+      while (isClash < .1) {
+        occurrenceID++;
+        row = {
+          insuredName: company.name,
+          insuranceCarrier: insuranceCarrier,
+          policyNumber: policyNumber,
+          year: year <= 2019 ? year : 2019,
+          effectiveDate: effectiveDate,
+          expirationDate: expirationDate,
+          claimNumber: claimNumber,
+          occurrenceID: occurrenceID,
+          claimantName: claimants[Math.floor(Math.random() * claimants.length)].name,
+          coverageType: coverages[coverageKey].coverageType,
+          lossType: coverages[coverageKey].lossTypes[Math.floor(Math.random() * coverages[coverageKey].lossTypes.length)],
+        };
+        data.push(row);
+        isClash = Math.random();
+        i++;
+      }
     }
     console.log(data);
     this.outputCSV(data);
